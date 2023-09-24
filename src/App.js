@@ -5,7 +5,7 @@ import searchIcon from './search.svg';
 import MovieCards from "./MovieCards";
 
 
-const API_URL = 'http://www.omdbapi.com?apikey=b0d60c5c';
+const API_URL = 'https://www.omdbapi.com?apikey=b0d60c5c';
 
 const App = () => {
     
@@ -15,7 +15,15 @@ const App = () => {
     const searchMovies = async (title) =>{
         const response = await fetch(`${API_URL}&s=${title}`);
         const data = await response.json();
-        setMovies(data.Search);
+        if (response.ok) {
+            if (data.Search && data.Search.length > 0) {
+              // Valid data is returned
+              setMovies(data.Search);
+            } else {
+              // No movies found
+              setMovies([]);
+            }
+        } 
     }
 
     useEffect(() => {
@@ -48,18 +56,16 @@ const App = () => {
             </div>
 
             {
-                movies.length > 0? (
+                movies.length > 0 ? (
                     <div className="container">
-                       {movies.map((movie) => (
-                        <MovieCards movie = {movie}/>
-                       ))}
+                    {movies.map((movie) => (
+                        <MovieCards key={movie.imdbID} movie={movie} />
+                    ))}
                     </div>
                 ) : (
-                    
                     <div className="empty">
-                        <h2>No Movies Found</h2>
-                    </div> 
-                    
+                    <h2>No Movies Found</h2>
+                    </div>
                 )
             }
         </div>
